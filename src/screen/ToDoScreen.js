@@ -6,9 +6,8 @@ import {
     TouchableOpacity,
     FlatList,
 } from 'react-native';
-import React from 'react';
-import { IconButton } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import React, { useEffect, useState } from 'react';
+import { Ionicons, Entypo } from '@expo/vector-icons';
 
 const dummyData = [{
     id: "01",
@@ -19,6 +18,33 @@ const dummyData = [{
 }]
 
 const ToDoScreen = () => {
+
+    //Init local states
+    const[todo, setTodo] = useState("")
+    const[todoList, setTodoList] = useState([])
+
+    //Handle Add To-do
+
+    const handleAddTodo = () => {
+        //structure of a single to-do item
+        // {
+        //     id:
+        //     title:
+        // }
+
+        setTodoList([...todoList, {id: Date.now().toString(), title: todo }])
+        setTodo("");
+    };
+
+    //Handle Delete To-Do
+
+    const handleDeleteTodo = (id) => {
+        const updatedToDdoList = todoList.filter((todo) => todo.id !== id)
+
+        setTodoList(updatedToDdoLists)
+    }
+
+    //Render todo
     const renderTodos = ({ item, index }) => (
         <View
             style={{
@@ -27,11 +53,18 @@ const ToDoScreen = () => {
                 paddingHorizontal: 6,
                 paddingVertical: 12,
                 marginBottom: 12,
-            }}
-        >
-            <IconButton icon={() => <Icon name="pencil" size={20} />}
-                onPress={() => console.log('Pressed')} />
-            <Text style={{ color: "#fff", fontWeight: "800" }}>{item.title}</Text>
+                flexDirection: "row",
+                alignItems: "center",
+            }}>
+            
+            
+            <Text style={{ color: "#fff", fontWeight: "800", flex: 1 }}>{item.title}</Text>
+            <TouchableOpacity>
+                <Entypo name="edit" size={20} color="#fff" paddingHorizontal={4}/>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleDeleteTodo(item.id)}>
+                <Ionicons name="trash-outline" size={20} color="#fff" />
+            </TouchableOpacity>
         </View>
     )
 
@@ -47,8 +80,11 @@ const ToDoScreen = () => {
                     marginTop: 40
                 }}
                 placeholder='Add a task'
+                value={todo}
+                onChangeText={(userText) => setTodo(userText)}
+                
             />
-
+            
             <TouchableOpacity
                 style={{
                     backgroundColor: "#000",
@@ -56,7 +92,9 @@ const ToDoScreen = () => {
                     paddingVertical: 8,
                     marginVertical: 34,
                     alignItems: "center"
-                }}>
+                }}
+                onPress={() => handleAddTodo()}
+                >
                 <Text style={{ color: "#fff", fontWeight: "bold" }}>
                     Add
                 </Text>
@@ -64,7 +102,7 @@ const ToDoScreen = () => {
 
             {/* Render To-do List */}
 
-            <FlatList data={dummyData} renderItem={renderTodos}></FlatList>
+            <FlatList data={todoList} renderItem={renderTodos}></FlatList>
         </View>
     )
 }
