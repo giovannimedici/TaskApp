@@ -9,19 +9,13 @@ import {
 import React, { useEffect, useState } from 'react';
 import { Ionicons, Entypo } from '@expo/vector-icons';
 
-const dummyData = [{
-    id: "01",
-    title: "Wash car"
-}, {
-    id: "02",
-    title: "Read a book"
-}]
-
 const ToDoScreen = () => {
 
     //Init local states
-    const[todo, setTodo] = useState("")
-    const[todoList, setTodoList] = useState([])
+    const [todo, setTodo] = useState("");
+    const [todoList, setTodoList] = useState([]);
+    const [editedTodo, setEditedTodo] = useState(null);
+
 
     //Handle Add To-do
 
@@ -32,16 +26,43 @@ const ToDoScreen = () => {
         //     title:
         // }
 
-        setTodoList([...todoList, {id: Date.now().toString(), title: todo }])
+        if (todo == "") {
+            return;
+        }
+
+        setTodoList([...todoList, { id: Date.now().toString(), title: todo }])
         setTodo("");
     };
 
     //Handle Delete To-Do
 
     const handleDeleteTodo = (id) => {
-        const updatedToDdoList = todoList.filter((todo) => todo.id !== id)
+        const updatedTodoList = todoList.filter((todo) => todo.id !== id)
 
-        setTodoList(updatedToDdoLists)
+        setTodoList(updatedTodoList)
+    }
+
+    //Handle Edit todo
+
+    const handleEditTodo = (todo) => {
+        setEditedTodo(todo);
+        setTodo(todo.Title);
+    }
+
+    //Handle Update
+
+    const handleUpdateTodo = () => {
+        const updatedTodos = todoList.map((item) => {
+            if (item.id == editedTodo.id) {
+                return { ...item, title: todo };
+            }
+
+            return item;
+        });
+
+        setTodoList(updatedTodos);
+        setEditedTodo(null);
+        setTodo("");
     }
 
     //Render todo
@@ -55,12 +76,16 @@ const ToDoScreen = () => {
                 marginBottom: 12,
                 flexDirection: "row",
                 alignItems: "center",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.8,
+                shadowRadius: 2,
             }}>
-            
-            
+
+
             <Text style={{ color: "#fff", fontWeight: "800", flex: 1 }}>{item.title}</Text>
-            <TouchableOpacity>
-                <Entypo name="edit" size={20} color="#fff" paddingHorizontal={4}/>
+            <TouchableOpacity onPress={() => handleEditTodo(item)}>
+                <Entypo name="edit" size={20} color="#fff" paddingHorizontal={4} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleDeleteTodo(item.id)}>
                 <Ionicons name="trash-outline" size={20} color="#fff" />
@@ -82,23 +107,49 @@ const ToDoScreen = () => {
                 placeholder='Add a task'
                 value={todo}
                 onChangeText={(userText) => setTodo(userText)}
-                
+
             />
-            
-            <TouchableOpacity
-                style={{
-                    backgroundColor: "#000",
-                    borderRadius: 6,
-                    paddingVertical: 8,
-                    marginVertical: 34,
-                    alignItems: "center"
-                }}
-                onPress={() => handleAddTodo()}
+
+            {editedTodo ? (
+                <TouchableOpacity
+                    style={{
+                        backgroundColor: "#000",
+                        borderRadius: 6,
+                        paddingVertical: 12,
+                        marginVertical: 34,
+                        alignItems: "center",
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.8,
+                        shadowRadius: 3,
+                    }}
+                    onPress={() => handleUpdateTodo()}
                 >
-                <Text style={{ color: "#fff", fontWeight: "bold" }}>
-                    Add
-                </Text>
-            </TouchableOpacity>
+                    <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 20 }}>
+                        Save
+                    </Text>
+                </TouchableOpacity>
+            ) : (
+                <TouchableOpacity
+                    style={{
+                        backgroundColor: "#000",
+                        borderRadius: 6,
+                        paddingVertical: 12,
+                        marginVertical: 34,
+                        alignItems: "center",
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.8,
+                        shadowRadius: 3,
+                    }}
+                    onPress={() => handleAddTodo()}
+                >
+                    <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 20 }}>
+                        Add
+                    </Text>
+                </TouchableOpacity>
+            )}
+
 
             {/* Render To-do List */}
 
